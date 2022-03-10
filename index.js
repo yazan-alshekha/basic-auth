@@ -6,7 +6,6 @@ const base64 = require("base-64");
 
 
 const { Sequelize, DataTypes } = require('sequelize');
-const { password, user } = require("pg/lib/defaults");
 
 
 const app = express();
@@ -28,7 +27,7 @@ const Users = sequelize.define("user", {
     }
 });
 
-
+//home route
 app.get('/', (req, res) => {
     res.send("Hello world");
 });
