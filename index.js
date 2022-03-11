@@ -6,6 +6,7 @@ const base64 = require("base-64");
 
 const Users = require('./models/user.model');
 const basic_auth = require('./middlewares/basic-auth');
+const bearer_auth= require("./middlewares/bearer_auth");
 const { Sequelize, DataTypes } = require('sequelize');
 
 
@@ -31,6 +32,8 @@ app.get('/', (req, res) => {
 app.post('/signup', signupFunc);
 
 app.post('/signin',basic_auth(UserModel),signinFunc);
+app.get("/user",bearer_auth(UserModel),userHandler);
+
 
 
 
@@ -57,10 +60,15 @@ async function signupFunc(req, res) {
 }
 
 // localhost:3030/sigin >> Authorization >> 'Basic encoded(username:password)'
-async function signinFunc(req,res){
+function signinFunc(req,res){
         res.status( 200).json( req.user );
 
 }
+
+function userHandler(req,res){
+    res.status(200).json( req.user );
+}
+
 
 
 sequelize.sync().then(() => {
