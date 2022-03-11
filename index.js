@@ -4,7 +4,9 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const base64 = require("base-64");
 
-
+const Users = require('./models/user.model');
+const basic_auth = require('./middlewares/basic-auth');
+const bearer_auth= require("./middlewares/bearer_auth");
 const { Sequelize, DataTypes } = require('sequelize');
 
 
@@ -15,17 +17,11 @@ const DATABASE_URL = 'postgresql://yazan_alshekha:0000@localhost:5432/basic_auth
 
 const sequelize = new Sequelize(DATABASE_URL, {});
 
+const UserModel = Users(sequelize,DataTypes);
 
-const Users = sequelize.define("user", {
-    username: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
-    password: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    }
-});
+
+
+
 
 //home route
 app.get('/', (req, res) => {
@@ -34,7 +30,10 @@ app.get('/', (req, res) => {
 
 
 app.post('/signup', signupFunc);
-app.post('/signin',signinFunc);
+
+app.post('/signin',basic_auth(UserModel),signinFunc);
+app.get("/user",bearer_auth(UserModel),userHandler);
+
 
 
 
@@ -61,32 +60,15 @@ async function signupFunc(req, res) {
 }
 
 // localhost:3030/sigin >> Authorization >> 'Basic encoded(username:password)'
-async function signinFunc(req,res){
-    if (req.headers['authorization']){
-        
-        let basicHeaderParts= req.headers.authorization.split(' ');
-        let encodedPart=basicHeaderParts.pop(); //encoded(username:password)
-        console.log("encodedPart>>>",encodedPart);
+function signinFunc(req,res){
+        res.status( 200).json( req.user );
 
-        let decoded = base64.decode(encodedPart); //username,password
-        console.log("decodedPart>>>",decoded);
-
-        let [username,password]=decoded.split(':');//[username,password]
-
-        try{
-            let user=await Users.findOne( { where : {username:username} } );
-            let valid = await bcrypt.compare(password,user.password);
-            if (valid){
-                res.status(200).json( {username:username} );
-            }
-            else{
-                res.send('user is not valid');
-            }
-        }catch(error){
-            res.send(error);
-        }
-    }
 }
+
+function userHandler(req,res){
+    res.status(200).json( req.user );
+}
+
 
 
 sequelize.sync().then(() => {
