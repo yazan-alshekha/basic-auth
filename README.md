@@ -4,3 +4,5 @@
 - lab7 is on new branch 
     - we learned how to use token by bearer auth 
     
+-lab8 is on new branch
+    - we lerned how to add user permissions
