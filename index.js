@@ -46,7 +46,7 @@ async function signupFunc(req, res) {
     try{
         let hashedPassword= await bcrypt.hash(password,5);
         console.log("hashedPassword >>>",hashedPassword);
-        const newUser=await Users.create({
+        const newUser=await UserModel.create({
             username:username,
             password:hashedPassword,
         });
