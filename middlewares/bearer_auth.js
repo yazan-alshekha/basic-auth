@@ -16,7 +16,7 @@ module.exports = (UserModel) =>  (req, res, next) => {
         UserModel.validateToken(token).then(user => {
             req.user = user;
             next();
-        }).catch(error => { res.json( `invalid user ${error}` ) } )
+        }).catch(error => { next(`invalid user${error}`) })
     }
 
 
