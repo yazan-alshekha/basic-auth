@@ -4,9 +4,6 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const base64 = require("base-64");
 
-const errorHandler = require('./handlers/500.js');
-const notFoundHandler = require('./handlers/404.js');
-
 const Users = require('./models/user.model');
 const basic_auth = require('./middlewares/basic-auth');
 const bearer_auth= require("./middlewares/bearer_auth");
@@ -71,10 +68,6 @@ function signinFunc(req,res){
 function userHandler(req,res){
     res.status(200).json( req.user );
 }
-
-// middlewares
-app.use(errorHandler);
-app.use('*', notFoundHandler);
 
 
 
